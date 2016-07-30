@@ -10,7 +10,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.mugen.Mugen;
+import com.mugen.MugenCallbacks;
 import com.youngcreate.gitdroid.R;
+import com.youngcreate.gitdroid.components.FooterView;
+import com.youngcreate.gitdroid.hotrepo.repolist.RepoListPresenter;
+import com.youngcreate.gitdroid.hotrepo.repolist.view.RepoListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +30,7 @@ import in.srain.cube.views.ptr.header.StoreHouseHeader;
 /**
  * Created by Administrator on 16-7-28.
  */
-public class RepoListFragment extends Fragment {
+public class RepoListFragment extends Fragment implements RepoListView {
 
     @BindView(R.id.lvRepos)
     ListView listView;
@@ -41,6 +46,8 @@ public class RepoListFragment extends Fragment {
     private ArrayAdapter<String> adapter;
 
     private RepoListPresenter repoListPresenter;
+
+    private FooterView footerView;
 
     @Nullable
     @Override
@@ -59,6 +66,28 @@ public class RepoListFragment extends Fragment {
         listView.setAdapter(adapter);
 
         initPullToRefresh();
+        initLoadMoreScroll();
+    }
+
+    private void initLoadMoreScroll() {
+        footerView = new FooterView(getContext());
+        Mugen.with(listView, new MugenCallbacks() {
+            //listView,滚动到底部，将触发此方法
+            @Override
+            public void onLoadMore() {
+                repoListPresenter.loadMore();
+            }
+
+            @Override
+            public boolean isLoading() {
+                return listView.getFooterViewsCount() > 0 && footerView.isLoading();
+            }
+
+            @Override
+            public boolean hasLoadedAllItems() {
+                return false;
+            }
+        }).start();
     }
 
     private void initPullToRefresh() {
@@ -84,43 +113,78 @@ public class RepoListFragment extends Fragment {
 
     }
 
-    //刷新的方法
+    //下拉刷新的方法---------------------------------------------------------
 
     //显示内容or错误or空白，三选一
 
     //显示提示信息
+
+    @Override
     public void showContentView() {
-       ptrClassicFrameLayout.setVisibility(View.VISIBLE);
+        ptrClassicFrameLayout.setVisibility(View.VISIBLE);
         emptyView.setVisibility(View.GONE);
         errorView.setVisibility(View.GONE);
 
 
     }
 
+    @Override
     public void showErrorView(String errorMsg) {
         ptrClassicFrameLayout.setVisibility(View.GONE);
         emptyView.setVisibility(View.GONE);
         errorView.setVisibility(View.VISIBLE);
     }
 
+    @Override
     public void showEmptyView() {
         ptrClassicFrameLayout.setVisibility(View.GONE);
         emptyView.setVisibility(View.VISIBLE);
         errorView.setVisibility(View.GONE);
     }
 
+    @Override
     public void showMessage(String msg) {
     }
 
-
-    public void stopRefresh(){
+    @Override
+    public void stopRefresh() {
         ptrClassicFrameLayout.refreshComplete();
     }
 
     //刷新数据
+    @Override
     public void refreshData(List<String> data) {
         adapter.clear();
         adapter.addAll(data);
+        adapter.notifyDataSetChanged();
+    }
+
+    //上拉加载更多的方法---------------------------------------------------------
+
+    @Override
+    public void showLoadMoreLoading() {
+        if(listView.getFooterViewsCount()==0){
+            listView.addFooterView(footerView);
+        }
+        footerView.showLoading();
+    }
+
+    @Override
+    public void hideLoadMore() {
+       listView.removeFooterView(footerView);
+    }
+
+    @Override
+    public void showLoadMoreError(String errorMsg) {
+        if(listView.getFooterViewsCount()==0){
+            listView.addFooterView(footerView);
+        }
+       footerView.showError(errorMsg);
+    }
+
+    @Override
+    public void addMoreData(List<String> datas) {
+       adapter.addAll(datas);
         adapter.notifyDataSetChanged();
     }
 
