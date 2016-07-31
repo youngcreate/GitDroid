@@ -2,9 +2,18 @@ package com.youngcreate.gitdroid.hotrepo.repolist;
 
 import android.os.AsyncTask;
 
+import com.youngcreate.gitdroid.commons.LogUtils;
 import com.youngcreate.gitdroid.hotrepo.repolist.view.RepoListView;
+import com.youngcreate.gitdroid.network.GitHubApi;
+import com.youngcreate.gitdroid.network.GitHubClient;
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Administrator on 16-7-28.
@@ -19,8 +28,38 @@ public class RepoListPresenter {
 
     //下拉刷新
     public void refresh() {
-        new RefreshTask().execute();
+        //        new RefreshTask().execute();
+        GitHubClient gitHubClient = new GitHubClient();
+        GitHubApi gitHubApi = gitHubClient.getGitHubApi();
+        Call<ResponseBody> call = gitHubApi.gitHub();
+        call.enqueue(refreshCallback);
     }
+
+    private final Callback<ResponseBody> refreshCallback = new Callback<ResponseBody>() {
+        @Override
+        public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+            repoListView.stopRefresh();
+            //200-299
+            if (response.isSuccessful()) {
+                ResponseBody responseBody = response.body();
+                if (responseBody == null) {
+                    repoListView.showMessage("unknown error");
+                    return;
+                }
+                repoListView.showContentView();
+            } else {
+                //401未授权
+                repoListView.showMessage("code:" + response.code());
+            }
+
+        }
+
+        @Override
+        public void onFailure(Call<ResponseBody> call, Throwable t) {
+            repoListView.stopRefresh();
+            repoListView.showContentView();
+        }
+    };
 
     //上拉加载更多
     public void loadMore() {

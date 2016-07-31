@@ -3,7 +3,6 @@ package com.youngcreate.gitdroid.hotrepo;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 
 /**
  * Created by Administrator on 16-7-28.
@@ -15,7 +14,7 @@ public class HotRepoAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return new RepoListFragment() ;
+        return new com.youngcreate.gitdroid.hotrepo.RepoListFragment();
     }
 
     @Override

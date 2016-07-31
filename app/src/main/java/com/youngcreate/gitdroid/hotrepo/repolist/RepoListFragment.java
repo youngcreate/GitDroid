@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.mugen.Mugen;
 import com.mugen.MugenCallbacks;
 import com.youngcreate.gitdroid.R;
+import com.youngcreate.gitdroid.commons.ActivityUtils;
 import com.youngcreate.gitdroid.components.FooterView;
 import com.youngcreate.gitdroid.hotrepo.repolist.RepoListPresenter;
 import com.youngcreate.gitdroid.hotrepo.repolist.view.RepoListView;
@@ -46,7 +47,7 @@ public class RepoListFragment extends Fragment implements RepoListView {
     private ArrayAdapter<String> adapter;
 
     private RepoListPresenter repoListPresenter;
-
+    private ActivityUtils activityUtils;
     private FooterView footerView;
 
     @Nullable
@@ -59,7 +60,7 @@ public class RepoListFragment extends Fragment implements RepoListView {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-
+        activityUtils=new ActivityUtils(this);
         repoListPresenter = new RepoListPresenter(this);
         adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, new ArrayList<String>());
 
@@ -144,6 +145,7 @@ public class RepoListFragment extends Fragment implements RepoListView {
 
     @Override
     public void showMessage(String msg) {
+        activityUtils.showToast(msg);
     }
 
     @Override
