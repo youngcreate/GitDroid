@@ -28,11 +28,11 @@ public class RepoListPresenter {
 
     //下拉刷新
     public void refresh() {
-        //        new RefreshTask().execute();
-        GitHubClient gitHubClient = new GitHubClient();
+                new RefreshTask().execute();
+       /* GitHubClient gitHubClient = new GitHubClient();
         GitHubApi gitHubApi = gitHubClient.getGitHubApi();
         Call<ResponseBody> call = gitHubApi.gitHub();
-        call.enqueue(refreshCallback);
+        call.enqueue(refreshCallback);*/
     }
 
     private final Callback<ResponseBody> refreshCallback = new Callback<ResponseBody>() {

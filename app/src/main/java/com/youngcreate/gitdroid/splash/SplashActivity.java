@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.youngcreate.gitdroid.MainActivity;
 import com.youngcreate.gitdroid.R;
 import com.youngcreate.gitdroid.commons.ActivityUtils;
+import com.youngcreate.gitdroid.login.LoginActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -30,7 +31,8 @@ public class SplashActivity extends AppCompatActivity {
 
     @OnClick(R.id.btnLogin)
     public void login() {
-
+        activityUtils.startActivity(LoginActivity.class);
+        finish();
     }
 
     @OnClick(R.id.btnEnter)
