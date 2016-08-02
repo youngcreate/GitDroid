@@ -1,4 +1,4 @@
-package com.youngcreate.gitdroid.hotrepo;
+package com.youngcreate.gitdroid.hotrepo.repolist;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -6,7 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -15,10 +15,11 @@ import com.mugen.MugenCallbacks;
 import com.youngcreate.gitdroid.R;
 import com.youngcreate.gitdroid.commons.ActivityUtils;
 import com.youngcreate.gitdroid.components.FooterView;
-import com.youngcreate.gitdroid.hotrepo.repolist.RepoListPresenter;
+import com.youngcreate.gitdroid.hotrepo.Language;
+import com.youngcreate.gitdroid.hotrepo.repolist.model.Repo;
 import com.youngcreate.gitdroid.hotrepo.repolist.view.RepoListView;
+import com.youngcreate.gitdroid.repoinfo.RepoInfoActivity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -33,6 +34,20 @@ import in.srain.cube.views.ptr.header.StoreHouseHeader;
  */
 public class RepoListFragment extends Fragment implements RepoListView {
 
+    private static final String KEY_LANGUAGE = "key_language";
+
+    public static RepoListFragment getInstance(Language language) {
+        RepoListFragment fragment = new RepoListFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(KEY_LANGUAGE, language);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private Language getLanguage() {
+        return (Language) getArguments().getSerializable(KEY_LANGUAGE);
+    }
+
     @BindView(R.id.lvRepos)
     ListView listView;
 
@@ -44,8 +59,7 @@ public class RepoListFragment extends Fragment implements RepoListView {
     TextView errorView;
 
 
-    private ArrayAdapter<String> adapter;
-
+    private RepoListAdapter adapter;
     private RepoListPresenter repoListPresenter;
     private ActivityUtils activityUtils;
     private FooterView footerView;
@@ -60,12 +74,20 @@ public class RepoListFragment extends Fragment implements RepoListView {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
-        activityUtils=new ActivityUtils(this);
-        repoListPresenter = new RepoListPresenter(this);
-        adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, new ArrayList<String>());
+        activityUtils = new ActivityUtils(this);
+        repoListPresenter = new RepoListPresenter(this, getLanguage());
 
+        adapter = new RepoListAdapter();
         listView.setAdapter(adapter);
-
+        //
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Repo repo = adapter.getItem(position);
+                RepoInfoActivity.open(getContext(), repo);
+            }
+        });
+        //
         initPullToRefresh();
         initLoadMoreScroll();
     }
@@ -155,17 +177,16 @@ public class RepoListFragment extends Fragment implements RepoListView {
 
     //刷新数据
     @Override
-    public void refreshData(List<String> data) {
+    public void refreshData(List<Repo> data) {
         adapter.clear();
         adapter.addAll(data);
-        adapter.notifyDataSetChanged();
     }
 
     //上拉加载更多的方法---------------------------------------------------------
 
     @Override
     public void showLoadMoreLoading() {
-        if(listView.getFooterViewsCount()==0){
+        if (listView.getFooterViewsCount() == 0) {
             listView.addFooterView(footerView);
         }
         footerView.showLoading();
@@ -173,21 +194,20 @@ public class RepoListFragment extends Fragment implements RepoListView {
 
     @Override
     public void hideLoadMore() {
-       listView.removeFooterView(footerView);
+        listView.removeFooterView(footerView);
     }
 
     @Override
     public void showLoadMoreError(String errorMsg) {
-        if(listView.getFooterViewsCount()==0){
+        if (listView.getFooterViewsCount() == 0) {
             listView.addFooterView(footerView);
         }
-       footerView.showError(errorMsg);
+        footerView.showError(errorMsg);
     }
 
     @Override
-    public void addMoreData(List<String> datas) {
-       adapter.addAll(datas);
-        adapter.notifyDataSetChanged();
+    public void addMoreData(List<Repo> datas) {
+        adapter.addAll(datas);
     }
 
 }

@@ -2,6 +2,8 @@ package com.youngcreate.gitdroid.hotrepo.repolist.view;
 
 import android.view.View;
 
+import com.youngcreate.gitdroid.hotrepo.repolist.model.Repo;
+
 import java.util.List;
 
 /**
@@ -19,5 +21,5 @@ public interface RepoListPtrView {
 
     void stopRefresh();
 
-    void refreshData(List<String> data);
+    void refreshData(List<Repo> data);
 }

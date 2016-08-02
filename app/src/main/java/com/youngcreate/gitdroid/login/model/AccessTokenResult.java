@@ -1,4 +1,4 @@
-package com.youngcreate.gitdroid.login;
+package com.youngcreate.gitdroid.login.model;
 
 import com.google.gson.annotations.SerializedName;
 

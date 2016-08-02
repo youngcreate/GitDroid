@@ -9,7 +9,9 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.youngcreate.gitdroid.MainActivity;
 import com.youngcreate.gitdroid.R;
+import com.youngcreate.gitdroid.commons.ActivityUtils;
 import com.youngcreate.gitdroid.network.GitHubApi;
 
 
@@ -23,17 +25,19 @@ import pl.droidsonroids.gif.GifImageView;
 //3. 用code去授权，得到token值
 //4. 使用token就能访问用户接口，得到用户数据
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements LoginView {
     @BindView(R.id.webView)
     WebView webView;
     @BindView(R.id.gifImageView)
     GifImageView gifImageView;
 
+    private ActivityUtils activityUtils;
     private LoginPresenter loginPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activityUtils = new ActivityUtils(this);
         setContentView(R.layout.activity_login);
     }
 
@@ -41,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     public void onContentChanged() {
         super.onContentChanged();
         ButterKnife.bind(this);
-        loginPresenter=new LoginPresenter();
+        loginPresenter = new LoginPresenter(this);
         initWebView();
 
 
@@ -60,12 +64,12 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private WebViewClient webViewClient=new WebViewClient(){
+    private WebViewClient webViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
 
-            Uri uri=Uri.parse(url);
-            if(GitHubApi.CALL_BACK.equals(uri.getScheme())){
+            Uri uri = Uri.parse(url);
+            if (GitHubApi.CALL_BACK.equals(uri.getScheme())) {
                 //获取code
                 String code = uri.getQueryParameter("code");
                 //用code做登陆业务
@@ -80,11 +84,33 @@ public class LoginActivity extends AppCompatActivity {
     private WebChromeClient webChromeClient = new WebChromeClient() {
         @Override
         public void onProgressChanged(WebView view, int newProgress) {
-          //  super.onProgressChanged(view, newProgress);
+            //  super.onProgressChanged(view, newProgress);
             if (newProgress >= 100) {
                 gifImageView.setVisibility(View.GONE);
-                webView.setVisibility(View.VISIBLE);
+
             }
         }
     };
+
+    @Override
+    public void showProgress() {
+        gifImageView.setVisibility(View.VISIBLE);
+
+    }
+
+    @Override
+    public void showMessage(String msg) {
+        activityUtils.showToast(msg);
+    }
+
+    @Override
+    public void resetWeb() {
+        initWebView();
+    }
+
+    @Override
+    public void navigateToMain() {
+        activityUtils.startActivity(MainActivity.class);
+        finish();
+    }
 }

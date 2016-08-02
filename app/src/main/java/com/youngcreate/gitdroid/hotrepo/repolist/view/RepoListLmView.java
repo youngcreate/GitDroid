@@ -1,5 +1,7 @@
 package com.youngcreate.gitdroid.hotrepo.repolist.view;
 
+import com.youngcreate.gitdroid.hotrepo.repolist.model.Repo;
+
 import java.util.List;
 
 /**
@@ -13,6 +15,6 @@ public interface RepoListLmView {
 
     void showLoadMoreError(String errorMsg);
 
-    void addMoreData(List<String> datas);
+    void addMoreData(List<Repo> datas);
 
 }

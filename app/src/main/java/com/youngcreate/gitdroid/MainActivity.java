@@ -10,8 +10,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.youngcreate.gitdroid.commons.ActivityUtils;
 import com.youngcreate.gitdroid.hotrepo.HotRepoFragment;
+import com.youngcreate.gitdroid.login.LoginActivity;
+import com.youngcreate.gitdroid.login.UserRepo;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -27,10 +34,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Toolbar toolbar;
 
     private HotRepoFragment hotRepoFragment;
+    private Button btnLogin;
+    private ImageView ivIcon;
+
+    private ActivityUtils activityUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activityUtils = new ActivityUtils(this);
         setContentView(R.layout.activity_main);
 
     }
@@ -48,9 +60,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         toggle.syncState();
         drawerLayout.setDrawerListener(toggle);
+        btnLogin = ButterKnife.findById(navigationView.getHeaderView(0), R.id.btnLogin);
+        ivIcon = ButterKnife.findById(navigationView.getHeaderView(0), R.id.ivIcon);
+        btnLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                activityUtils.startActivity(LoginActivity.class);
+                finish();
+            }
+        });
 
         hotRepoFragment = new HotRepoFragment();
         replaceFragment(hotRepoFragment);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (UserRepo.isEmpty()) {
+            // 登录
+            btnLogin.setText(R.string.login_github);
+            return;
+        }
+        // 切换帐号
+        btnLogin.setText(R.string.switch_account);
+        //设置Title
+        getSupportActionBar().setTitle(UserRepo.getUser().getName());
+        //设置用户头像
+        String photoUrl = UserRepo.getUser().getAvatarUrl();
+        ImageLoader.getInstance().displayImage(photoUrl, ivIcon);
 
     }
 
