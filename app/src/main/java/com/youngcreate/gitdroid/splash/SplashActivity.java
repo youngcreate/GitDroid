@@ -3,10 +3,10 @@ package com.youngcreate.gitdroid.splash;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.youngcreate.gitdroid.MainActivity;
+import com.youngcreate.gitdroid.github.MainActivity;
 import com.youngcreate.gitdroid.R;
 import com.youngcreate.gitdroid.commons.ActivityUtils;
-import com.youngcreate.gitdroid.login.LoginActivity;
+import com.youngcreate.gitdroid.github.login.LoginActivity;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
