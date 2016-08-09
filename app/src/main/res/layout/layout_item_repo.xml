@@ -23,6 +23,7 @@
         android:layout_marginRight="@dimen/dp_10">
         <TextView
             android:id="@+id/tvRepoName"
+            android:text="tvRepoName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="@dimen/sp_20"
@@ -31,6 +32,7 @@
             />
         <TextView
             android:id="@+id/tvRepoInfo"
+            android:text="tvRepoInfo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_2"
@@ -38,6 +40,7 @@
             />
         <TextView
             android:id="@+id/tvRepoStars"
+            android:text="tvRepoStars"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dp_2"

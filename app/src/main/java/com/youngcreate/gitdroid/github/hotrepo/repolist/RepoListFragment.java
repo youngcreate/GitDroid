@@ -15,8 +15,12 @@ import com.mugen.MugenCallbacks;
 import com.youngcreate.gitdroid.R;
 import com.youngcreate.gitdroid.commons.ActivityUtils;
 import com.youngcreate.gitdroid.components.FooterView;
+import com.youngcreate.gitdroid.favorite.DAO.DBHelp;
+import com.youngcreate.gitdroid.favorite.DAO.LocalRepoDao;
+import com.youngcreate.gitdroid.favorite.model.LocalRepo;
 import com.youngcreate.gitdroid.github.hotrepo.Language;
 import com.youngcreate.gitdroid.github.hotrepo.repolist.model.Repo;
+import com.youngcreate.gitdroid.github.hotrepo.repolist.model.RepoConverter;
 import com.youngcreate.gitdroid.github.hotrepo.repolist.view.RepoListView;
 import com.youngcreate.gitdroid.github.repoinfo.RepoInfoActivity;
 
@@ -87,6 +91,22 @@ public class RepoListFragment extends Fragment implements RepoListView {
                 RepoInfoActivity.open(getContext(), repo);
             }
         });
+        //长按某个仓库后，加入收藏
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                //热门仓库列表上的Repo
+                Repo repo = adapter.getItem(position);
+                //将Repo转为LocalRepo
+                LocalRepo localRepo = RepoConverter.convert(repo);
+                //添加到本地仓库表中去（只认本地仓库实体LocalRepo）
+                new LocalRepoDao(DBHelp.getInstance(getContext())).createOrUpdate(localRepo);
+                activityUtils.showToast("收藏成功");
+                return true;
+            }
+        });
+
+
         //
         initPullToRefresh();
         initLoadMoreScroll();

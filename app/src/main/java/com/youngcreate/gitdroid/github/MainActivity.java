@@ -18,6 +18,8 @@ import android.widget.ImageView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.youngcreate.gitdroid.R;
 import com.youngcreate.gitdroid.commons.ActivityUtils;
+import com.youngcreate.gitdroid.favorite.FavoriteFragment;
+import com.youngcreate.gitdroid.gank.GankFragment;
 import com.youngcreate.gitdroid.github.hotrepo.HotRepoFragment;
 import com.youngcreate.gitdroid.github.hotuser.HotUserFragment;
 import com.youngcreate.gitdroid.github.login.LoginActivity;
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private HotRepoFragment hotRepoFragment;
     private HotUserFragment hotUserFragment;
+    private FavoriteFragment favoriteFragment;
+    private GankFragment gankFragment;
 
     private Button btnLogin;
     private ImageView ivIcon;
@@ -60,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle(R.string.app_name);
+            getSupportActionBar().setTitle(R.string.label_main);
         }
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         toggle.syncState();
@@ -108,17 +112,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
 
-        if(item.isChecked()){
+        if (item.isChecked()) {
             item.setChecked(false);
         }
 
         switch (item.getItemId()) {
+            //热门仓库
             case R.id.github_hot_repo:
                 if (!hotRepoFragment.isAdded()) {
                     replaceFragment(hotRepoFragment);
                 }
                 break;
-
+            //热门开发者
             case R.id.github_hot_coder:
                 if (hotUserFragment == null) {
                     hotUserFragment = new HotUserFragment();
@@ -127,6 +132,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     replaceFragment(hotUserFragment);
                 }
                 break;
+            //我的收藏
+            case R.id.arsenal_my_repo:
+                if (favoriteFragment == null) {
+                    favoriteFragment = new FavoriteFragment();
+                }
+                if (!favoriteFragment.isAdded()) {
+                    replaceFragment(favoriteFragment);
+                }
+                break;
+            //每日干货
+            case R.id.tips_daily:
+                if (gankFragment == null) {
+                    gankFragment = new GankFragment();
+                }
+                if (!gankFragment.isAdded()) {
+                    replaceFragment(gankFragment);
+                }
+                break;
+
         }
 
         drawerLayout.post(new Runnable() {

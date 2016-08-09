@@ -1,14 +1,16 @@
-package com.youngcreate.gitdroid.github.hotrepo.repolist;
+package com.youngcreate.gitdroid.favorite;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.youngcreate.gitdroid.R;
+import com.youngcreate.gitdroid.favorite.model.LocalRepo;
 import com.youngcreate.gitdroid.github.hotrepo.repolist.model.Repo;
 
 import java.util.ArrayList;
@@ -18,14 +20,21 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 /**
- * Created by Administrator on 16-8-2.
+ * Created by Administrator on 16-8-5.
  */
-public class RepoListAdapter extends BaseAdapter {
+public class FavoriteAdapter extends BaseAdapter {
 
-    private ArrayList<Repo> datas;
+    private ArrayList<LocalRepo> datas;
 
-    public RepoListAdapter(){
-        datas = new ArrayList<Repo>();
+
+    public FavoriteAdapter() {
+        datas = new ArrayList<LocalRepo>();
+    }
+
+    public void setData(Collection<LocalRepo> repos) {
+        datas.clear();
+        datas.addAll(repos);
+        notifyDataSetChanged();
     }
 
     @Override
@@ -34,23 +43,13 @@ public class RepoListAdapter extends BaseAdapter {
     }
 
     @Override
-    public Repo getItem(int position) {
+    public LocalRepo getItem(int position) {
         return datas.get(position);
     }
 
     @Override
     public long getItemId(int position) {
         return position;
-    }
-
-    public void addAll(Collection<Repo> repos){
-         datas.addAll(repos);
-        notifyDataSetChanged();
-    }
-
-    public void clear(){
-        datas.clear();
-        notifyDataSetChanged();
     }
 
     @Override
@@ -60,12 +59,13 @@ public class RepoListAdapter extends BaseAdapter {
             convertView = inflater.inflate(R.layout.layout_item_repo, parent, false);
             convertView.setTag(new ViewHolder(convertView));
         }
-        ViewHolder viewHolder= (ViewHolder) convertView.getTag();
-        Repo repo= getItem(position);
-        viewHolder.tvRepoName.setText(repo.getFullName());
-        viewHolder.tvRepoInfo.setText(repo.getDescription());
-        viewHolder.tvRepoStars.setText(String.format("stars: %d", repo.getStarCount()));
-        ImageLoader.getInstance().displayImage(repo.getOwner().getAvatarUrl(),viewHolder.ivIcon);
+        ViewHolder viewHolder = (ViewHolder) convertView.getTag();
+        LocalRepo localRepo= getItem(position);
+        viewHolder.tvRepoName.setText(localRepo.getFullName());
+        viewHolder.tvRepoInfo.setText(localRepo.getDescription());
+        viewHolder.tvRepoStars.setText(String.format("stars: %d", localRepo.getStarCount()));
+        ImageLoader.getInstance().displayImage(localRepo.getAvatar(),viewHolder.ivIcon);
+
         return convertView;
     }
 
@@ -78,6 +78,7 @@ public class RepoListAdapter extends BaseAdapter {
         TextView tvRepoInfo;
         @BindView(R.id.tvRepoStars)
         TextView tvRepoStars;
+
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);
